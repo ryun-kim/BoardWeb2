@@ -1,6 +1,7 @@
 package com.koreait.board2.board;
 
 import com.koreait.board2.DbUtils;
+import com.koreait.board2.model.BoardParamVO;
 import com.koreait.board2.model.BoardVO;
 
 import javax.xml.transform.Result;
@@ -25,6 +26,28 @@ public class BoardDAO {
             e.printStackTrace();
         } finally {
             DbUtils.close(con, ps);
+        }
+        return 0;
+    }
+
+    public static int selMaxPage(BoardParamVO param){
+        Connection con = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String sql = "SELECT ceil(COUNT(*)/ ?) FROM t_board";
+
+        try{
+            con= DbUtils.getCon();
+            ps = con.prepareStatement(sql);
+            ps.setInt(1,param.getRecordCnt());
+            rs = ps.executeQuery();
+            if(rs.next()){
+                return rs.getInt(1);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            DbUtils.close(con, ps, rs);
         }
         return 0;
     }
@@ -105,7 +128,7 @@ public class BoardDAO {
         return null;
     }
 
-    public static List<BoardVO> selBoardList(){
+    public static List<BoardVO> selBoardList(BoardParamVO param){
         List<BoardVO> list = new ArrayList<>();
         Connection con = null;
         PreparedStatement ps =null;
@@ -114,10 +137,13 @@ public class BoardDAO {
                 " FROM t_board A " +
                 " INNER JOIN t_user B " +
                 " ON A.writer = B.iuser" +
-                " ORDER BY iboard DESC ";
+                " ORDER BY iboard DESC " +
+                " LIMIT ?, ?";
         try{
             con = DbUtils.getCon();
             ps =con.prepareStatement(sql);
+            ps.setInt(1,param.getsIdx());
+            ps.setInt(2, param.getRecordCnt());
             rs =ps.executeQuery();
             while (rs.next()){
                 BoardVO vo = new BoardVO();
@@ -178,4 +204,6 @@ public class BoardDAO {
         }
         return 0;
     }
+
+
 }
