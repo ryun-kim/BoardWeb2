@@ -18,7 +18,11 @@ public class BoardDetailServlet extends HttpServlet {
         int strint = MyUtils.parseStringToInt(str);
         BoardVO vo = new BoardVO();
         vo.setIboard(strint);
-        req.setAttribute("detaildata",BoardDAO.selBoardDetail(vo));
+        int prevIboard = BoardDAO.prevBoard(vo);
+        int nextIboard = BoardDAO.nextBoard(vo);
+        req.setAttribute("prevIboard", prevIboard);
+        req.setAttribute("nextIboard", nextIboard);
+        req.setAttribute("data",BoardDAO.selBoardDetail(vo));
         MyUtils.disForward(req,res,"board/detail");
     }
 

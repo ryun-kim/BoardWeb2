@@ -3,6 +3,7 @@ package com.koreait.board2.board;
 import com.koreait.board2.DbUtils;
 import com.koreait.board2.model.BoardVO;
 
+import javax.xml.transform.Result;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,50 @@ public class BoardDAO {
             e.printStackTrace();
         } finally {
             DbUtils.close(con, ps);
+        }
+        return 0;
+    }
+
+    public static int prevBoard(BoardVO param){
+        Connection con = null;
+        PreparedStatement ps =null;
+        ResultSet rs = null;
+        String sql ="SELECT iboard FROM t_board WHERE iboard < ? ORDER BY iboard DESC LIMIT 1";
+
+        try{
+            con =DbUtils.getCon();
+            ps = con.prepareStatement(sql);
+            ps.setInt(1,param.getIboard());
+            rs =ps.executeQuery();
+            if(rs.next()){
+                return rs.getInt("iboard");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            DbUtils.close(con,ps,rs);
+        }
+        return 0;
+    }
+
+    public static int nextBoard(BoardVO param){
+        Connection con = null;
+        PreparedStatement ps =null;
+        ResultSet rs = null;
+        String sql ="SELECT iboard FROM t_board WHERE iboard > ? ORDER BY iboard LIMIT 1";
+
+        try{
+            con =DbUtils.getCon();
+            ps = con.prepareStatement(sql);
+            ps.setInt(1,param.getIboard());
+            rs =ps.executeQuery();
+            if(rs.next()){
+                return rs.getInt("iboard");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            DbUtils.close(con,ps,rs);
         }
         return 0;
     }
@@ -89,6 +134,30 @@ public class BoardDAO {
         }
         return list;
     }
+
+
+    public static int updBoard(BoardVO param){
+        Connection con = null;
+        PreparedStatement ps =null;
+        String sql = "UPDATE t_board SET title =?, ctnt =? , mdt =now() WHERE iboard =? AND writer=?";
+
+        try{
+            con = DbUtils.getCon();
+            ps = con.prepareStatement(sql);
+            ps.setString(1,param.getTitle());
+            ps.setString(2,param.getCtnt());
+            ps.setInt(3,param.getIboard());
+            ps.setInt(4,param.getWriter());
+            return ps.executeUpdate();
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally {
+            DbUtils.close(con, ps);
+        }
+        return 0;
+    }
+
+
 
     public static int DelBoard(BoardVO param){
         Connection con = null;

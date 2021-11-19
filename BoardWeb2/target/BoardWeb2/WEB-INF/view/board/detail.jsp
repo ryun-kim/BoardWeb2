@@ -2,7 +2,7 @@
 <%@ page import="com.koreait.board2.model.UserVO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
-    BoardVO vo = (BoardVO) request.getAttribute("detaildata");
+    BoardVO vo = (BoardVO) request.getAttribute("data");
     UserVO loginUser = (UserVO)session.getAttribute("loginUser");
 %>
 
@@ -38,8 +38,9 @@
     <% if(loginUser != null && vo.getWriter() == loginUser.getIuser()) {%>
     <div>
         <a href="/board/del?iboard=<%=vo.getIboard()%>"><input type="button" value="삭제" ></a>
-        <input type="button" value="수정">
+        <a href="/board/mod?iboard=<%=vo.getIboard()%>"><input type="button" value="수정"></a>
     </div>
     <%} %>
+
 </body>
 </html>
